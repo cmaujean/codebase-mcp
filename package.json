@@ -1,0 +1,36 @@
+{
+  "name": "vite-codebase-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for analyzing Vite application codebases",
+  "type": "module",
+  "main": "server.ts",
+  "bin": {
+    "vite-mcp": "./server.ts"
+  },
+  "scripts": {
+    "start": "bun run server.ts",
+    "dev": "bun --watch server.ts",
+    "build": "bun build server.ts --outdir dist --target bun",
+    "install-mcp": "bun install @modelcontextprotocol/sdk"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "vite", 
+    "codebase-analysis",
+    "development-tools"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  }
+}
