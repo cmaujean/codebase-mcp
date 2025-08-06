@@ -1,27 +1,44 @@
 {
-  "name": "vite-codebase-mcp",
+  "name": "@codebase-mcp/server",
   "version": "1.0.0",
-  "description": "MCP server for analyzing Vite application codebases",
+  "description": "MCP server for analyzing any application codebase with real-time file watching",
   "type": "module",
-  "main": "server.ts",
+  "main": "dist/server.js",
   "bin": {
-    "vite-mcp": "./server.ts"
+    "codebase-mcp": "./bin/codebase-mcp"
   },
+  "files": [
+    "dist/",
+    "bin/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "bun run server.ts",
     "dev": "bun --watch server.ts",
-    "build": "bun build server.ts --outdir dist --target bun",
-    "install-mcp": "bun install @modelcontextprotocol/sdk"
+    "build": "bun build server.ts --outdir dist --target node --format esm",
+    "prepublishOnly": "bun run build",
+    "install-global": "bun run build && npm install -g ."
   },
   "keywords": [
     "mcp",
     "model-context-protocol",
-    "vite", 
     "codebase-analysis",
-    "development-tools"
+    "file-watching",
+    "development-tools",
+    "claude-code",
+    "static-analysis"
   ],
-  "author": "Your Name",
+  "author": "Christopher Narozny",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/codebase-mcp-server.git"
+  },
+  "homepage": "https://github.com/your-username/codebase-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/your-username/codebase-mcp-server/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
@@ -32,5 +49,6 @@
   "engines": {
     "node": ">=18.0.0",
     "bun": ">=1.0.0"
-  }
+  },
+  "preferGlobal": true
 }

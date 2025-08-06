@@ -1,66 +1,124 @@
-# Vite Codebase MCP Server
+# Codebase MCP Server
 
-A Model Context Protocol (MCP) server that analyzes Vite application codebases, providing AI assistants like Claude with deep insights into your project structure, code patterns, and architecture.
+A Model Context Protocol (MCP) server that analyzes any application codebase with real-time file watching, providing AI assistants like Claude with deep insights into your project structure, code patterns, and architecture.
 
 ## Features
 
-- **Smart Codebase Ingestion**: Automatically scans and categorizes files in any Vite project
-- **Framework Detection**: Identifies whether you're using React, Vue, Svelte, or vanilla JS
+- **Universal Codebase Analysis**: Works with any programming language or framework (not just Vite)
+- **Real-time File Watching**: Automatically stays synchronized with file system changes
+- **Smart Framework Detection**: Identifies React, Vue, Svelte, Angular, or vanilla projects
 - **Intelligent Filtering**: Excludes node_modules, build files, and other non-essential content
 - **File Categorization**: Organizes files into source, config, test, documentation, and build categories
 - **Content Search**: Search files by name patterns, content, type, or category
-- **Project Analysis**: Provides detailed project structure and dependency information
+- **Multi-project Support**: Switch between different projects seamlessly
+- **Global Installation**: Install once, use anywhere
 
 ## Installation
 
-### Prerequisites
-- [Bun](https://bun.sh/) installed on your system
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) for local MCP usage
+### Global Installation (Recommended)
 
-### Setup
-
-1. **Clone or create the project:**
 ```bash
-mkdir vite-mcp-server
-cd vite-mcp-server
+# Install globally with Bun
+bun install -g @codebase-mcp/server
+
+# Or install globally with npm
+npm install -g @codebase-mcp/server
 ```
 
-2. **Save the server code** as `server.ts` and package.json as shown in the artifacts above
+### Local Development Installation
 
-3. **Install dependencies:**
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/codebase-mcp-server.git
+cd codebase-mcp-server
+
+# Install dependencies
 bun install
+
+# Build the project
+bun run build
+
+# Install globally from local build
+bun run install-global
 ```
 
-4. **Make the server executable:**
+## Configuration
+
+### With Claude Code (Console/CLI)
+
+Add the MCP server using the Claude Code CLI:
+
 ```bash
-chmod +x server.ts
+# Add the MCP server (local scope - for current project)
+claude mcp add codebase-mcp codebase-mcp
+
+# Or add for user scope (available across all projects)
+claude mcp add --scope user codebase-mcp codebase-mcp
+
+# Verify it was added
+claude mcp list
 ```
 
-## Usage
+### With Claude Desktop
 
-### With Claude Code
-
-1. **Configure Claude Code** to use this MCP server by adding to your Claude Code config:
+Add to your Claude Desktop settings:
 
 ```json
 {
   "mcps": {
-    "vite-codebase": {
-      "command": "bun",
-      "args": ["run", "/path/to/vite-mcp-server/server.ts"],
+    "codebase-mcp": {
+      "command": "codebase-mcp",
       "env": {}
     }
   }
 }
 ```
 
-2. **Start Claude Code** and the MCP server will be available
+## Usage
 
-3. **Ingest a codebase:**
+### Quick Start
+
+1. **Install the MCP server globally** (see installation above)
+2. **Configure Claude Code/Desktop** with the MCP server
+3. **Restart Claude Code/Desktop**
+4. **Analyze any codebase:**
+
 ```
-Hey Claude, can you ingest the Vite codebase at /path/to/my-vite-project?
+Hey Claude, can you ingest the codebase at /path/to/my-project?
 ```
+
+### Multi-Project Usage
+
+#### Single Instance (Project Switching)
+Within one Claude Code instance, switch between projects:
+
+```
+Claude, ingest the React app at /Users/me/my-react-app
+Claude, now switch to analyze the Python project at /Users/me/my-python-project
+Claude, go back to the React app and show me the component structure
+```
+
+#### Multiple Instances (Concurrent Projects)
+Each Claude Code instance runs its own isolated MCP server process:
+
+- **Project A** (Claude Code in `/path/to/project-a/`): Own MCP server with PID 1234
+- **Project B** (Claude Code in `/path/to/project-b/`): Own MCP server with PID 5678
+- **Project C** (Claude Code in `/path/to/project-c/`): Own MCP server with PID 9012
+
+Each instance maintains its own:
+- File index and project structure
+- File watcher for real-time updates
+- Independent state and memory
+
+No conflicts or interference between projects!
+
+### Real-time Synchronization
+
+Once a codebase is ingested, the server automatically:
+- Monitors all file changes in real-time
+- Updates the file index when files are created, modified, or deleted
+- Re-analyzes project structure automatically
+- Keeps Claude's understanding up-to-date with your changes
 
 ### Available Tools
 
@@ -163,13 +221,39 @@ The server intelligently excludes common directories and files:
 ### Common Issues
 
 1. **"Path does not exist"**: Ensure the provided path is correct and accessible
-2. **"No package.json found"**: Make sure you're pointing to a Node.js/Vite project root
+2. **"No package.json found"**: This is just a warning - the server works with any codebase
 3. **Permission errors**: Ensure the server has read access to the target directory
 
-### Debug Mode
-Run with additional logging:
+### Multiple Instance Debugging
+
+Each MCP server instance shows its Process ID (PID) for debugging:
+
+```
+Successfully ingested codebase from: /path/to/project
+Server PID: 12345 (for debugging multiple instances)
+```
+
+**Check running instances:**
 ```bash
+# See all running codebase-mcp processes
+ps aux | grep codebase-mcp
+
+# Kill a specific instance if needed
+kill 12345
+```
+
+**Verify isolation:**
+- Each Claude Code instance should show a different PID
+- File changes in Project A should only affect that instance
+- Each instance can watch different codebases simultaneously
+
+### Debug Mode
+```bash
+# Run with additional logging
 DEBUG=1 bun run server.ts
+
+# Or check Claude Code logs for MCP server output
+tail -f ~/.claude/logs/mcp.log
 ```
 
 ## Contributing

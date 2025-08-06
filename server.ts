@@ -61,7 +61,7 @@ interface SearchFilesArgs {
 	category?: string;
 }
 
-class ViteMCPServer {
+export class ViteMCPServer {
 	private server: Server;
 	private codebaseConfig: CodebaseConfig | null = null;
 	private fileIndex: Map<string, FileInfo> = new Map();
@@ -310,6 +310,8 @@ class ViteMCPServer {
 			maxDepth,
 		};
 
+		// Stop existing file watcher if switching projects
+		this.stopFileWatcher();
 		this.fileIndex.clear();
 
 		try {
@@ -323,11 +325,13 @@ class ViteMCPServer {
 
 			const stats = this.getIngestionStats();
 
+			console.error(`MCP Server (PID: ${process.pid}) ingested codebase: ${path}`);
+
 			return {
 				content: [
 					{
 						type: "text",
-						text: `Successfully ingested Vite codebase from: ${path}\n\n${stats}`,
+						text: `Successfully ingested codebase from: ${path}\n\n${stats}\n\nServer PID: ${process.pid} (for debugging multiple instances)`,
 					},
 				],
 			};
@@ -843,7 +847,8 @@ This appears to be a ${framework} application built with Vite, containing ${cate
 	async run() {
 		const transport = new StdioServerTransport();
 		await this.server.connect(transport);
-		console.error("Vite MCP Server running on stdio");
+		const processId = process.pid;
+		console.error(`Codebase MCP Server (PID: ${processId}) running on stdio`);
 
 		// Handle graceful shutdown
 		process.on("SIGINT", () => {
@@ -858,6 +863,8 @@ This appears to be a ${framework} application built with Vite, containing ${cate
 	}
 }
 
-// Start the server
-const server = new ViteMCPServer();
-await server.run();
+// Start the server if this file is run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+	const server = new ViteMCPServer();
+	await server.run();
+}
