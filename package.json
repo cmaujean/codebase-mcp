@@ -40,6 +40,9 @@
     "url": "https://github.com/your-username/codebase-mcp-server/issues"
   },
   "dependencies": {
+    "@babel/parser": "^7.28.0",
+    "@babel/traverse": "^7.28.0",
+    "@babel/types": "^7.28.2",
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {
